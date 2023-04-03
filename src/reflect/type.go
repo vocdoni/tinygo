@@ -1036,7 +1036,7 @@ func (t *rawType) AssignableTo(u Type) bool {
 	}
 
 	if u.Kind() == Interface {
-		panic("reflect: unimplemented: AssignableTo with interface")
+		// panic("reflect: unimplemented: AssignableTo with interface")
 	}
 	return false
 }
