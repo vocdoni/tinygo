@@ -29,6 +29,7 @@
 //     ptrTo        *typeStruct
 //     elem         *typeStruct // element type of the array
 //     arrayLen     uintptr     // length of the array (this is part of the type)
+//     slicePtr     *typeStruct // pointer to []T type
 // - map types (this is still missing the key and element types)
 //     meta         uint8
 //     nmethods     uint16 (0)
@@ -416,6 +417,7 @@ type elemType struct {
 type ptrType struct {
 	rawType
 	numMethod uint16
+	ptrTo     *rawType
 	elem      *rawType
 }
 
@@ -425,6 +427,7 @@ type arrayType struct {
 	ptrTo     *rawType
 	elem      *rawType
 	arrayLen  uintptr
+	slicePtr  *rawType
 }
 
 type mapType struct {
@@ -501,6 +504,9 @@ func pointerTo(t *rawType) *rawType {
 	case Pointer:
 		// TODO(dgryski): This is blocking https://github.com/tinygo-org/tinygo/issues/3131
 		// We need to be able to create types that match existing types to prevent typecode equality.
+		if ptrTo := (*ptrType)(unsafe.Pointer(t)).ptrTo; ptrTo != nil {
+			return ptrTo
+		}
 		panic("reflect: cannot make **T type")
 	case Struct:
 		return (*structType)(unsafe.Pointer(t)).ptrTo
