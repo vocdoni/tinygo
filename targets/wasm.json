@@ -16,8 +16,12 @@
 	],
 	"ldflags": [
 		"--allow-undefined-file={root}/targets/wasm-undefined.txt",
+		"--no-demangle",
 		"--stack-first",
-		"--no-demangle"
+		"{root}/lib/libclang_rt.builtins-wasm32.a",
+		"--initial-memory=2147483648",
+	        "--max-memory=4294967296",
+        	"-zstack-size=16384"
 	],
 	"extra-files": [
 		"src/runtime/asm_tinygowasm.S"
