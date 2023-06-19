@@ -555,8 +555,29 @@ func (v Value) Slice(i, j int) Value {
 		}
 
 	case Array:
-		// TODO(dgryski): can't do this yet because the resulting value needs type slice of v.elem(), not array of v.elem().
+		// Currently this case works but its not ideal.
+		// TODO(dgryski): can't do this properly yet because the resulting value needs type slice of v.elem(), not array of v.elem().
 		// need to be able to look up this "new" type so pointer equality of types still works
+		v.checkAddressable()
+		buf, length := buflen(v)
+		i, j := uintptr(i), uintptr(j)
+		if j < i || length < j {
+			slicePanic()
+		}
+
+		elemSize := v.typecode.underlying().elem().Size()
+
+		var hdr sliceHeader
+		hdr.len = j - i
+		hdr.cap = length - i
+		hdr.data = unsafe.Add(buf, i*elemSize)
+
+		sliceType := (*arrayType)(unsafe.Pointer(v.typecode.underlying())).slicePtr
+		return Value{
+			typecode: sliceType,
+			value:    unsafe.Pointer(&hdr),
+			flags:    v.flags,
+		}
 
 	case String:
 		i, j := uintptr(i), uintptr(j)

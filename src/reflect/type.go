@@ -29,6 +29,7 @@
 //     ptrTo        *typeStruct
 //     elem         *typeStruct // element type of the array
 //     arrayLen     uintptr     // length of the array (this is part of the type)
+//     slicePtr     *typeStruct // pointer to []T type
 // - map types (this is still missing the key and element types)
 //     meta         uint8
 //     nmethods     uint16 (0)
@@ -427,6 +428,7 @@ type arrayType struct {
 	ptrTo     *rawType
 	elem      *rawType
 	arrayLen  uintptr
+	slicePtr  *rawType
 }
 
 type mapType struct {
@@ -949,7 +951,7 @@ func (t *rawType) AssignableTo(u Type) bool {
 	}
 
 	if u.Kind() == Interface {
-	//	panic("reflect: unimplemented: AssignableTo with interface")
+		//	panic("reflect: unimplemented: AssignableTo with interface")
 	}
 	return false
 }
